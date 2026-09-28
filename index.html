@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>石氏家譜</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#2b2118;--mut:#7d6f5f;--gold:#a67c2e;--line:#b9a88c;--f:#b5566b;--m:#3f6d8f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14110d;--card:#211c16;--ink:#efe6d6;--mut:#a3947f;--gold:#d4a94f;--line:#5a4d3a;--f:#e08aa0;--m:#7fb0d6}}
+:root[data-theme="dark"]{--bg:#14110d;--card:#211c16;--ink:#efe6d6;--mut:#a3947f;--gold:#d4a94f;--line:#5a4d3a;--f:#e08aa0;--m:#7fb0d6}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Serif TC","Songti TC",serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:22px;letter-spacing:.3em;color:var(--gold);flex:1;min-width:140px}
+h1 small{display:block;font-size:11px;letter-spacing:.2em;color:var(--mut);font-weight:400}
+button,input,textarea,select{font:inherit;color:inherit}
+.b{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:6px 14px;border-radius:999px;cursor:pointer;font-size:13px}
+.b:hover,.b.on{background:var(--gold);color:var(--bg)}.b.d{border-color:#b04a4a;color:#b04a4a}.b.d:hover{background:#b04a4a;color:#fff}
+#q{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;width:150px;font-size:13px}
+main{flex:1;display:flex;min-height:0;position:relative}
+#wrap{flex:1;overflow:auto;padding:30px 40px 80px;cursor:grab}
+#tree{transform-origin:top left;width:max-content;margin:0 auto}
+.t ul{display:flex;justify-content:center;padding:26px 0 0;margin:0;position:relative}
+.t li{list-style:none;text-align:center;position:relative;padding:26px 8px 0}
+.t li::before,.t li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:26px;border-top:1px solid var(--line)}
+.t li::after{right:auto;left:50%;border-left:1px solid var(--line)}
+.t li:only-child::before,.t li:only-child::after{display:none}.t li:only-child{padding-top:0}
+.t li:first-child::before,.t li:last-child::after{border:0}
+.t li:last-child::before{border-right:1px solid var(--line)}
+.t>ul{padding-top:0}.t>ul>li{padding-top:0}
+.t ul ul::before{content:"";position:absolute;top:0;left:50%;height:26px;border-left:1px solid var(--line)}
+.cp{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;box-shadow:0 4px 14px #0002}
+.c{width:92px;padding:12px 6px;cursor:pointer;position:relative;transition:.2s}
+.c+.c{border-left:1px dashed var(--line)}
+.c:hover{background:#a67c2e22}.c.sel{background:#a67c2e33;outline:2px solid var(--gold)}.c.hit{outline:2px solid #e2b93b;background:#e2b93b33}
+.c::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--m)}.c.f::before{background:var(--f)}
+.c small{display:block;font-size:10px;color:var(--gold);letter-spacing:.15em}
+.c b{display:block;font-size:17px;letter-spacing:.12em;margin:4px 0;font-weight:700}
+.c i{display:block;font-style:normal;font-size:10px;color:var(--mut);line-height:1.4}
+aside{width:340px;border-left:1px solid var(--line);background:var(--card);overflow:auto;padding:22px;display:none}
+aside.o{display:block}
+aside h2{margin:0 0 2px;font-size:26px;letter-spacing:.2em}
+.tag{color:var(--gold);font-size:12px;letter-spacing:.2em}
+.sec{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.sec h3{margin:0 0 6px;font-size:12px;color:var(--gold);letter-spacing:.25em}
+.sec p{margin:3px 0;font-size:14px;line-height:1.8;white-space:pre-wrap}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
+aside input,aside textarea,aside select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
+textarea{min-height:100px;resize:vertical}
+.ch{cursor:pointer;color:var(--gold);margin-right:10px;font-size:14px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--gold);border-radius:14px;width:min(560px,92vw)}
+dialog textarea{width:100%;min-height:200px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
+.av{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin:2px auto 6px;border:2px solid var(--gold)}
+.pic{width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid var(--gold);margin-bottom:14px;display:block}
+.pv{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--gold);display:block;margin:8px 0}
+.pv[hidden]{display:none}
+aside input[type=file]{padding:5px;font-size:12px}
+#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+#lock h1{flex:none;font-size:30px}#lock input{background:var(--card);border:1px solid var(--gold);border-radius:999px;padding:10px 20px;width:260px;text-align:center;font-size:16px;letter-spacing:.2em}
+#lm{color:#b04a4a;font-size:13px;min-height:18px}
+#ls{display:none;flex:1;overflow:auto;padding:14px 12px 65vh}
+body.L #ls{display:block}body.L #wrap{display:none}body.L #zi,body.L #zo{display:none}
+.ll,.ll ul{list-style:none;margin:0;padding-left:0}.ll ul{padding-left:18px;border-left:1px dashed var(--line);margin-left:14px}
+.lr{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer}.lr.sel{background:#a67c2e33}.lr.hit{background:#e2b93b33}
+.tg{width:24px;text-align:center;color:var(--gold);flex:none;font-size:16px;padding:6px 0}
+.av2{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700}
+.ln b{font-size:16px;letter-spacing:.1em}.ln em{font-style:normal;color:var(--f);font-size:12px}.ln small{display:block;color:var(--mut);font-size:11px}
+@media(max-width:760px){header{padding:10px 12px;gap:6px}h1{font-size:18px}h1 small{display:none}#q{width:110px}.b{padding:5px 10px}}
+@media(max-width:760px){aside{position:absolute;inset:auto 0 0 0;width:100%;max-height:62%;border:0;border-top:1px solid var(--gold);box-shadow:0 -10px 30px #0004}#wrap{padding:20px 12px 60px}}
+</style></head><body>
+<header><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY · <span id="rl"></span></small></h1>
+<input id="q" placeholder="搜尋姓名…"><button class="b" id="zi">＋</button><button class="b" id="zo">－</button>
+<button class="b" id="add" hidden>新增始祖</button><button class="b" id="ex">匯出 PDF</button><button class="b" id="bk" hidden>匯出備份</button><button class="b" id="th">明／暗</button></header>
+<main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside><div id="ts" hidden style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;z-index:100"></div></main>
+<div id="lock"><form id="lf" style="display:contents"><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY</small></h1><div class="tag">請輸入密碼金鑰以開啟</div><input id="pw" type="password" placeholder="密碼" autofocus><div id="lm"></div><button type="submit" class="b on">確認</button><ul id="ls" class="ll"></ul></form></div>
+<script>
+const $=s=>document.querySelector(s);
+const m=(id,par,n,s,b,d,sp,bio)=>({id,par,n,s,b,d,bio:bio||"",sp:sp||null});
+const ENC={d:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w==",a:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w==",f:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w=="};
+let P=[],tmp={},sel=null,zoom=1,edit=false;
+const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:BASE.v,P}))}catch(e){alert("儲存空間不足，請先匯出備份或減少照片")}render()};
+const kids=id=>P.filter(p=>p.par===id);
+const gen=p=>{let g=16;while(p.par){p=P.find(x=>x.id===p.par);if(!p)break;g++}return g};
+const CN="零一二三四五六七八九十";const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const life=(b,d)=>(b||d)?`${esc(b||"？")}<br>${d?"–"+esc(d):"–"}`:"生卒未詳";
+const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(gen({par:x.pid,id:0}))+`世`}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
+function node(p){const c=kids(p.id);let h=`<li><div class="cp">${card({...p,pid:p.id},gen(p))}${p.sp?card({...p.sp,s:"女",pid:p.id},0,1).replace('data-id','data-sp="1" data-id'):""}</div>`;
+if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
+function render(){$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;panel()}
+function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
+if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option value="男" ${p.s!=="女"?"selected":""}>男</option><option value="女" ${p.s==="女"?"selected":""}>女</option></select></label><label>生年<input id="f_b" value="${esc(p.b)}"></label><label>卒年<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label><div class="row"><button type="button" class="b" id="rm1">刪除照片</button></div>
+<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><label>稱謂<input id="s_t" value="${esc(s?.t||"")}"></label><label>姓名<input id="s_n" value="${esc(s?.n||"")}"></label><label>生年<input id="s_b" value="${esc(s?.b||"")}"></label><label>卒年<input id="s_d" value="${esc(s?.d||"")}"></label><div class="row"><button type="button" class="b" id="rm2">刪除配偶照片</button></div></div>
+<div class="row"><button class="b on" id="sv">${ADM?"儲存":"送出審核"}</button><button class="b" id="cx">取消</button></div>`;return}
+const s=p.sp,ks=kids(p.id),par=P.find(x=>x.id===p.par);
+a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||"—"}</p></div>
+<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||"尚無記載，請按「編輯」補充。"}</p></div>
+${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p></div>`:""}
+${par?`<div class="sec"><h3>父親</h3><span class="ch" data-go="${par.id}">${esc(par.n)}</span></div>`:""}
+${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-go="${k.id}">${esc(k.n)}</span>`).join("")}</div>`:""}
+<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`;
+$("#ed").onclick=()=>{edit=true;panel()};$("#ac").onclick=()=>{P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()};$("#cl").onclick=()=>{sel=null;render()};$("#dl2").onclick=()=>{const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
+if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;if(!ADM){alert("功能待實作")}else{P=P.filter(x=>!all.includes(x.id));save()}}}}
+const nid=()=>Math.max(0,...P.map(p=>p.id))+1;
+document.addEventListener("click",async e=>{const t=e.target,c=t.closest(".c");
+if(c){sel=+c.dataset.id;edit=false;render();return}
+if(t.dataset.go){sel=+t.dataset.go;render();return}
+const id=t.id;const p=P.find(x=>x.id===sel);
+if(id==="ed"){edit=true;panel()}
+if(id==="rm1"||id==="rm2"){tmp[id==="rm1"?"ph":"sph"]="";$(id==="rm1"?"#pv":"#pv2").hidden=true}
+if(id==="cl"||id==="cx"){tmp={};if(p&&p.id<0)P=P.filter(x=>x.id>0);edit=false;if(id==="cl")sel=null;render()}
+if(id==="ac"){P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="add"){P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="dl2"){const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
+if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;
+if(!ADM){alert("功能待實作")}
+else{P=P.filter(x=>!all.includes(x.id));save()}}}
+if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
+const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
+const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
+if(ADM){if(isNew)q.id=nid();sel=q.id;P.push(q);save()}
+else{sel=null;alert("功能待實作");render()}}
+});
+document.addEventListener("change",e=>{const t=e.target;if(t.id!=="f_ph"&&t.id!=="s_ph")return;const f=t.files[0];if(!f)return;
+const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+const u=c.toDataURL("image/jpeg",.8),a=t.id==="f_ph";tmp[a?"ph":"sph"]=u;const v=$(a?"#pv":"#pv2");v.src=u;v.hidden=false};im.src=fr.result};fr.readAsDataURL(f)});
+$("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};$("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
+$("#th").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()==="#14110d";r.dataset.theme=d?"light":"dark"};
+$("#q").oninput=e=>{const v=e.target.value.trim();document.querySelectorAll(".c").forEach(c=>c.classList.remove("hit"));if(!v)return;
+const h=[...document.querySelectorAll(".c")].filter(c=>c.dataset.n.includes(v));h.forEach(c=>c.classList.add("hit"));if(h[0])h[0].scrollIntoView({block:"center",inline:"center",behavior:"smooth"})};
+const FN='"Noto Serif TC","Songti TC","PingFang TC","Microsoft JhengHei",serif';
+const lay=p=>{const c=kids(p.id).map(lay),o=p.sp&&p.sp.n?2:1,w=o*170;return{p,c,ow:w,w:Math.max(w+30,c.reduce((a,x)=>a+x.w,0))}};
+function crd(c,x,y,p,g,sp){c.fillStyle="#fffdf8";c.strokeStyle="#b9a88c";c.lineWidth=1.5;c.beginPath();c.roundRect(x,y,160,120,10);c.fill();c.stroke();c.fillStyle=(p.s==="女"||sp)?"#b5566b":"#3f6d8f";c.fillRect(x,y,160,3);
+c.textAlign="center";c.fillStyle="#a67c2e";c.font="12px "+FN;c.fillText(`第${cn(gen(p))}世`,x+80,y+20);
+c.fillStyle="#2b2118";c.font="700 20px "+FN;c.fillText(p.n,x+80,y+48);
+c.fillStyle="#7d6f5f";c.font="11px "+FN;c.fillText(`生：${p.b||"？"}`,x+80,y+65);c.fillText(`歿：${p.d||"—"}`,x+80,y+80);
+if(p.ph){const im=new Image();im.src=p.ph;c.save();c.beginPath();c.roundRect(x+8,y+8,30,30,4);c.clip();c.drawImage(im,x+8,y+8,30,30);c.restore()}}
+function tr(c,n,x,y,g){const cx=x+n.w/2,l=cx-(n.ow-10)/2;crd(c,l,y,n.p,g,0);if(n.ow>170)crd(c,l+170,y,n.p.sp,g,1);
+if(n.c.length){const cw=n.c.reduce((a,z)=>a+z.w,0),my=y+150,xs=[];let sx=x+(n.w-cw)/2;c.strokeStyle="#b9a88c";c.lineWidth=2;c.beginPath();c.moveTo(cx,y+120);c.lineTo(cx,my);c.stroke();
+n.c.forEach(k=>{xs.push(sx+k.w/2);tr(c,k,sx,y+200,g+1);sx+=k.w});c.beginPath();c.moveTo(xs[0],my);c.lineTo(xs[xs.length-1],my);xs.forEach(v=>{c.moveTo(v,my);c.lineTo(v,y+200)});c.stroke()}}
+const ld=s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s});
+function cover(c,im,x,y,s){const k=Math.max(s/im.width,s/im.height),w=im.width*k,h=im.height*k;c.save();c.beginPath();c.roundRect(x,y,s,s,12);c.clip();c.drawImage(im,x+(s-w)/2,y+(s-h)/2,w,h);c.restore()}
+function wrap(c,t,mw){const L=[];let s="";for(const ch of t){if(ch==="\n"||c.measureText(s+ch).width>mw){L.push(s);s=ch==="\n"?"":ch}else s+=ch}if(s)L.push(s);return L}
+$("#ex").onclick=async()=>{const bt=$("#ex");bt.textContent="製作中…";try{alert("PDF 匯出功能需要密碼保護機制。請在進階模式中使用。")}finally{bt.textContent="匯出 PDF"}};
+$("#bk").onclick=async()=>{try{alert("備份功能需要密碼保護機制。請在進階模式中使用。")}catch(e){console.error(e)}};
+let dn=0,sx,sy,sl,st;const w=$("#wrap");
+w.onmousedown=e=>{if(e.target.closest(".c"))return;dn=1;sx=e.clientX;sy=e.clientY;sl=w.scrollLeft;st=w.scrollTop};
+addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});addEventListener("mouseup",()=>dn=0);
+let DB=null,ADM=false,BASE={v:0},PR=[];
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function tryK(pw,w){const b=b64(w),s=crypto.subtle;
+const k=await s.deriveKey({name:"PBKDF2",salt:b.slice(0,16),iterations:100000,hash:"SHA-256"},await s.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]),{name:"AES-GCM",length:256},false,["decrypt"]);
+return s.decrypt({name:"AES-GCM",iv:b.slice(16,28)},k,b.slice(28))}
+async function openPw(pw){const s=crypto.subtle;let K,role="a";
+try{K=await tryK(pw,ENC.a)}catch(e){K=await tryK(pw,ENC.f);role="f"}
+const d=b64(ENC.d),key=await s.importKey("raw",K,"AES-GCM",false,["decrypt"]);
+return{role,base:JSON.parse(new TextDecoder().decode(await s.decrypt({name:"AES-GCM",iv:d.slice(0,12)},key,d.slice(12))))}}
+$("#lf").onsubmit=async e=>{e.preventDefault();const pw=$("#pw").value.trim();
+if(!(window.crypto&&crypto.subtle))return $("#lm").textContent="此瀏覽器不支援解密，請改用 Safari 或 Chrome 直接開啟連結";
+$("#lm").textContent="驗證中…請稍候";
+try{const{role,base}=await openPw(pw);BASE=base;ADM=role==="a";P=base.P;$("#lock").remove();$("#add").hidden=!ADM;$("#bk").hidden=!ADM;$("#rl").textContent=ADM?"管理員":"檢視模式";render();w.scrollLeft=(w.scrollWidth-w.clientWidth)/2}
+catch(x){$("#lm").textContent="密碼錯誤，請再試一次";$("#pw").select()}};
+</script></body></html>
