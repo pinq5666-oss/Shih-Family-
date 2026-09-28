@@ -46,76 +46,134 @@ label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
 aside input,aside textarea,aside select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
 textarea{min-height:100px;resize:vertical}
 .ch{cursor:pointer;color:var(--gold);margin-right:10px;font-size:14px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--gold);border-radius:14px;width:min(560px,92vw)}
+dialog textarea{width:100%;min-height:200px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
 .av{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin:2px auto 6px;border:2px solid var(--gold)}
 .pic{width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid var(--gold);margin-bottom:14px;display:block}
 .pv{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--gold);display:block;margin:8px 0}
 .pv[hidden]{display:none}
 aside input[type=file]{padding:5px;font-size:12px}
-.link-btn{color:#0066cc;cursor:pointer;text-decoration:underline}
-.link-btn:hover{text-decoration:none}
+#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+#lock h1{flex:none;font-size:30px}#lock input{background:var(--card);border:1px solid var(--gold);border-radius:999px;padding:10px 20px;width:260px;text-align:center;font-size:16px;letter-spacing:.2em}
+#lm{color:#b04a4a;font-size:13px;min-height:18px}
+#ls{display:none;flex:1;overflow:auto;padding:14px 12px 65vh}
+body.L #ls{display:block}body.L #wrap{display:none}body.L #zi,body.L #zo{display:none}
+.ll,.ll ul{list-style:none;margin:0;padding-left:0}.ll ul{padding-left:18px;border-left:1px dashed var(--line);margin-left:14px}
+.lr{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer}.lr.sel{background:#a67c2e33}.lr.hit{background:#e2b93b33}
+.tg{width:24px;text-align:center;color:var(--gold);flex:none;font-size:16px;padding:6px 0}
+.av2{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700}
+.ln b{font-size:16px;letter-spacing:.1em}.ln em{font-style:normal;color:var(--f);font-size:12px}.ln small{display:block;color:var(--mut);font-size:11px}
 @media(max-width:760px){header{padding:10px 12px;gap:6px}h1{font-size:18px}h1 small{display:none}#q{width:110px}.b{padding:5px 10px}}
 @media(max-width:760px){aside{position:absolute;inset:auto 0 0 0;width:100%;max-height:62%;border:0;border-top:1px solid var(--gold);box-shadow:0 -10px 30px #0004}#wrap{padding:20px 12px 60px}}
 </style></head><body>
-<header><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY · <span id="rl">公開版 · 即時更新</span></small></h1>
+<header><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY · <span id="rl"></span></small></h1>
 <input id="q" placeholder="搜尋姓名…"><button class="b" id="zi">＋</button><button class="b" id="zo">－</button>
-<button class="b" id="ex">匯出 PDF</button><button class="b" id="th">明／暗</button></header>
-<main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside></main>
+<button class="b" id="add" hidden>新增始祖</button><button class="b" id="ex">匯出 PDF</button><button class="b" id="bk" hidden>匯出備份</button><button class="b" id="up" hidden>匯出更新檔</button><button class="b" id="th">明／暗</button></header>
+<main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside><div id="ts" hidden style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:10px 20px;border-radius:999px;z-index:50;font-size:14px"></div></main>
 <script>
 const $=s=>document.querySelector(s);
 const m=(id,par,n,s,b,d,sp,bio)=>({id,par,n,s,b,d,bio:bio||"",sp:sp||null});
-
-// Load genealogy data from localStorage (persisted from 石氏家譜.html)
+const DEF=[{"id":1,"par":0,"n":"石有慶","s":"男","b":"民前 同治3年10月14日","d":"民前 光緒17年10月12日","bio":"曾曾祖父。依石家族譜為第十六世。","sp":{"n":"石鄭招","b":"民前 同治6年3月11日","d":"民國35年5月10日","t":"配偶"}},{"id":2,"par":1,"n":"石清標","s":"男","b":"民前 光緒14年3月23日","d":"民國62年1月13日","bio":"曾祖父。第十七世。","sp":{"n":"石游儉","b":"民前 光緒23年12月21日","d":"民國70年2月23日","t":"配偶"}},{"id":3,"par":2,"n":"石振發","s":"男","b":"民前 光緒31年6月15日","d":"民國85年3月27日","bio":"祖父。第十八世。","sp":{"n":"石江月妹","b":"民國3年3月16日","d":"民國84年6月18日","t":"配偶"}},{"id":4,"par":3,"n":"石世強","s":"男","b":"民國20年11月6日","d":"民國107年2月12日","bio":"父親。第十九世。","sp":{"n":"石劉素珍","b":"民國23年10月22日","d":"民國113年6月16日","t":"配偶"}},{"id":5,"par":3,"n":"石鳳","s":"女","b":"民國28年7月23日","d":"","bio":"姑姑。第十九世。","sp":null},{"id":6,"par":4,"n":"石政金","s":"男","b":"民國40年9月20日","d":"民國48年9月24日","bio":"第二十世。","sp":null},{"id":7,"par":4,"n":"石政柱","s":"男","b":"民國43年11月28日","d":"","bio":"","sp":{"n":"石曾素貞","b":"民國42年6月15日","d":"","t":"配偶"}},{"id":8,"par":4,"n":"石政城","s":"男","b":"民國51年11月25日","d":"","bio":"","sp":{"n":"蕭淑惠","b":"","d":"","t":"配偶"}},{"id":9,"par":4,"n":"石政維","s":"男","b":"民國53年11月16日","d":"","bio":"","sp":{"n":"月淑惠","b":"","d":"","t":"前配偶"}},{"id":10,"par":4,"n":"石政義","s":"男","b":"民國57年7月25日","d":"","bio":"","sp":{"n":"李瑞芬","b":"民國59年6月11日","d":"","t":"配偶"}},{"id":11,"par":4,"n":"石秀美","s":"女","b":"民國47年3月18日","d":"","bio":"","sp":{"n":"葉金龍","b":"","d":"","t":"配偶"}},{"id":12,"par":7,"n":"石國鋒","s":"男","b":"民國63年2月13日","d":"","bio":"","sp":{"n":"王筱婷","b":"民國65年4月23日","d":"","t":"配偶"}},{"id":13,"par":7,"n":"石綿濡","s":"男","b":"民國64年10月6日","d":"","bio":"","sp":{"n":"莊淑惠","b":"民國66年2月18日","d":"","t":"配偶"}},{"id":14,"par":7,"n":"石丞修","s":"男","b":"民國72年2月5日","d":"民國105年1月26日","bio":"","sp":null},{"id":15,"par":8,"n":"石博舜","s":"男","b":"","d":"","bio":"","sp":{"n":"許方齡","b":"","d":"","t":"配偶"}},{"id":16,"par":8,"n":"石恩齊","s":"男","b":"","d":"","bio":"","sp":{"n":"（未填）","b":"","d":"","t":"配偶"}},{"id":17,"par":8,"n":"石宇倫","s":"男","b":"","d":"","bio":"","sp":{"n":"蘇筠婷","b":"","d":"","t":"配偶"}},{"id":18,"par":9,"n":"石竹峻","s":"男","b":"","d":"","bio":"","sp":{"n":"（未填）","b":"","d":"","t":"配偶"}},{"id":19,"par":9,"n":"石綿楷","s":"男","b":"","d":"","bio":"","sp":{"n":"龔慈恩","b":"","d":"","t":"配偶"}},{"id":20,"par":9,"n":"石雨涵","s":"女","b":"","d":"","bio":"","sp":null},{"id":21,"par":10,"n":"石智宇","s":"男","b":"民國91年8月3日","d":"","bio":"","sp":null},{"id":22,"par":10,"n":"石佳憲","s":"男","b":"民國98年5月12日","d":"","bio":"","sp":null},{"id":23,"par":11,"n":"葉子銨","s":"男","b":"","d":"","bio":"","sp":{"n":"許惠如","b":"","d":"","t":"前配偶"}},{"id":24,"par":11,"n":"葉芳容","s":"女","b":"","d":"","bio":"","sp":{"n":"呂啟豪","b":"","d":"","t":"配偶"}},{"id":25,"par":12,"n":"石崇佑","s":"男","b":"民國91年11月16日","d":"","bio":"","sp":null},{"id":26,"par":12,"n":"石倚慈","s":"女","b":"民國97年1月20日","d":"","bio":"","sp":null},{"id":27,"par":13,"n":"石軒齊","s":"男","b":"民國87年10月24日","d":"","bio":"","sp":null},{"id":28,"par":15,"n":"石芮瑜","s":"女","b":"","d":"","bio":"","sp":null},{"id":29,"par":15,"n":"石芸熙","s":"女","b":"","d":"","bio":"","sp":null},{"id":30,"par":17,"n":"石閔晞","s":"女","b":"","d":"","bio":"","sp":null},{"id":31,"par":19,"n":"石顥","s":"男","b":"","d":"","bio":"","sp":null}];
 let P=[],tmp={},sel=null,zoom=1,edit=false;
-const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:1,P}))}catch(e){alert("儲存空間不足")}render()};
-
+const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:BASE.v,P}))}catch(e){alert("儲存空間不足，請先匯出備份或減少照片")}render()};
 const kids=id=>P.filter(p=>p.par===id);
 const gen=p=>{let g=16;while(p.par){p=P.find(x=>x.id===p.par);if(!p)break;g++}return g};
-const CN="零一二三四五六七八九十";
-const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
+const CN="零一二三四五六七八九十";const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
 const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const life=(b,d)=>(b||d)?`${esc(b||"？")}<br>${d?"–"+esc(d):"–"}`:"生卒未詳";
-const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(gen({par:x.pid,id:0}))+`世`}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
-
+const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(g)+"世"}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
 function node(p){const c=kids(p.id);let h=`<li><div class="cp">${card({...p,pid:p.id},gen(p))}${p.sp?card({...p.sp,s:"女",pid:p.id},0,1).replace('data-id','data-sp="1" data-id'):""}</div>`;
 if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
-
-function render(){$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;panel()}
-
+function render(){const sl0=w.scrollLeft,st0=w.scrollTop;$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;w.scrollLeft=sl0;w.scrollTop=st0;panel()}
 function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
+if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><button class="b" id="rm1" style="margin-top:6px">移除照片</button><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option ${p.s==="男"?"selected":""}>男</option><option ${p.s==="女"?"selected":""}>女</option></select></label><label>出生<input id="f_b" value="${esc(p.b)}" placeholder="例：民國63年2月13日"></label><label>逝世（在世請留空）<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label>
+<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><button class="b" id="rm2" style="margin-top:6px">移除照片</button><label>姓名<input id="s_n" value="${esc(s&&s.n)}"></label><label>關係<select id="s_t"><option ${s&&s.t==="前配偶"?"":"selected"}>配偶</option><option ${s&&s.t==="前配偶"?"selected":""}>前配偶</option></select></label><label>出生<input id="s_b" value="${esc(s&&s.b)}"></label><label>逝世<input id="s_d" value="${esc(s&&s.d)}"></label></div>
+<div class="row"><button class="b on" id="sv">${ADM?"儲存":"送出審核"}</button><button class="b" id="cx">取消</button></div>`;return}
 const s=p.sp,ks=kids(p.id),par=P.find(x=>x.id===p.par);
-a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||"—"}</p></div>
-<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||"暫無記載"}</p></div>
+a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||(p.b?"在世／未載":"未詳")}</p></div>
+<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||(ADM?"尚無記載，請按「編輯」補充。":"尚無記載")}</p></div>
 ${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p></div>`:""}
 ${par?`<div class="sec"><h3>父親</h3><span class="ch" data-go="${par.id}">${esc(par.n)}</span></div>`:""}
 ${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-go="${k.id}">${esc(k.n)}</span>`).join("")}</div>`:""}
-<div class="row"><span class="link-btn" id="editgh">📝 在 GitHub 編輯</span><button class="b" id="cl">關閉</button></div>`;
-$("#cl").onclick=()=>{sel=null;render()};
-$("#editgh").onclick=()=>{window.open('https://github.com/pinq5666-oss/Shih-Family-/edit/main/%E7%9F%B3%E6%B0%8F%E5%AE%B6%E8%AD%9C.html','_blank')}}
-
-document.addEventListener("click",e=>{const t=e.target,c=t.closest(".c");
-if(c){sel=+c.dataset.id;render();return}
-if(t.dataset.go){sel=+t.dataset.go;render();return}});
-
-$("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};
-$("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
+<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`}
+const nid=()=>Math.max(0,...P.map(p=>p.id))+1;
+document.addEventListener("click",async e=>{const t=e.target,c=t.closest(".c");
+if(t.dataset.ok){await approve(PR.find(x=>x.pid===t.dataset.ok));return}
+if(t.dataset.no){await DB.doc("proposals/"+t.dataset.no).delete();return}
+if(c){sel=+c.dataset.id;edit=false;render();return}
+if(t.dataset.go){sel=+t.dataset.go;render();return}
+const id=t.id;const p=P.find(x=>x.id===sel);
+if(id==="ed"){edit=true;panel()}
+if(id==="rm1"||id==="rm2"){tmp[id==="rm1"?"ph":"sph"]="";$(id==="rm1"?"#pv":"#pv2").hidden=true}
+if(id==="cl"||id==="cx"){tmp={};if(p&&p.id<0)P=P.filter(x=>x.id>0);edit=false;if(id==="cl")sel=null;render()}
+if(id==="ac"){P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="add"){P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="dl2"){const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
+if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;
+if(!ADM){await prop({type:"delete",target:p.id,name:p.n,data:null});render()}
+else if(DB){P=P.filter(x=>!all.includes(x.id));render();await persist([],all)}
+else{P=P.filter(x=>!all.includes(x.id));save()}}}
+if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
+const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
+const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
+if(ADM){if(isNew)q.id=nid();sel=q.id;if(DB){await persist([q])}else{{const i=P.findIndex(x=>x.id===q.id);if(i>=0)P[i]=q;else P.push(q)}save()}}
+else{sel=null;await prop({type:isNew?"add":"edit",target:isNew?0:q.id,name:n,data:q});render()}}
+});
+document.addEventListener("change",e=>{const t=e.target;if(t.id!=="f_ph"&&t.id!=="s_ph")return;const f=t.files[0];if(!f)return;
+const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+const u=c.toDataURL("image/jpeg",.8),a=t.id==="f_ph";tmp[a?"ph":"sph"]=u;const v=$(a?"#pv":"#pv2");v.src=u;v.hidden=false};im.src=fr.result};fr.readAsDataURL(f)});
+$("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};$("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
 $("#th").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()==="#14110d";r.dataset.theme=d?"light":"dark"};
 $("#q").oninput=e=>{const v=e.target.value.trim();document.querySelectorAll(".c").forEach(c=>c.classList.remove("hit"));if(!v)return;
 const h=[...document.querySelectorAll(".c")].filter(c=>c.dataset.n.includes(v));h.forEach(c=>c.classList.add("hit"));if(h[0])h[0].scrollIntoView({block:"center",inline:"center",behavior:"smooth"})};
-
-// Load data from localStorage or show instruction
-const loadData=()=>{try{const S=JSON.parse(localStorage.getItem("shi3")||"");if(S&&Array.isArray(S.P)&&S.P.length>0){P=S.P;render();return}}catch(x){}
-$("#wrap").innerHTML="<div style='padding:40px;text-align:center'><h2 style='color:var(--gold)'>📖 家譜載入中...</h2><p style='color:var(--mut);margin-top:20px'>請先打開 <strong>石氏家譜.html</strong> 一次以載入族譜數據</p><a href='石氏家譜.html' class='b' style='display:inline-block;margin-top:20px'>點此打開完整版</a></div>"};
-
-loadData();
-
-// Check for updates every 5 seconds
-setInterval(()=>{try{const S=JSON.parse(localStorage.getItem("shi3")||"");if(S&&Array.isArray(S.P)&&S.P.length>P.length){P=S.P;render()}}catch(x){}},5000);
-
-const w=$("#wrap");
-let dn=0,sx,sy,sl,st;
+const getDw=async()=>{try{if(window.claude)return await claude.use("downloads")}catch(e){}return{save:async({filename:f,data:d})=>{const a=document.createElement("a");a.href=URL.createObjectURL(d instanceof Blob?d:new Blob([d]));a.download=f;document.body.appendChild(a);a.click();a.remove()}}};
+const FN='"Noto Serif TC","Songti TC","PingFang TC","Microsoft JhengHei",serif';
+const lay=p=>{const c=kids(p.id).map(lay),o=p.sp&&p.sp.n?2:1,w=o*170;return{p,c,ow:w,w:Math.max(w+30,c.reduce((a,x)=>a+x.w,0))}};
+function crd(c,x,y,p,g,sp){c.fillStyle="#fffdf8";c.strokeStyle="#b9a88c";c.lineWidth=1.5;c.beginPath();c.roundRect(x,y,160,120,10);c.fill();c.stroke();c.fillStyle=(p.s==="女"||sp)?"#b5566b":"#3f6d8f";c.fillRect(x+10,y,140,4);c.textAlign="center";c.fillStyle="#a67c2e";c.font="12px "+FN;c.fillText(sp?(p.t||"配偶"):"第"+cn(g)+"世",x+80,y+26);c.fillStyle="#2b2118";c.font="700 22px "+FN;c.fillText(p.n,x+80,y+58);c.fillStyle="#7d6f5f";c.font="11px "+FN;c.fillText(p.b||"生卒未詳",x+80,y+84);if(p.d)c.fillText("– "+p.d,x+80,y+102)}
+function tr(c,n,x,y,g){const cx=x+n.w/2,l=cx-(n.ow-10)/2;crd(c,l,y,n.p,g,0);if(n.ow>170)crd(c,l+170,y,n.p.sp,g,1);
+if(n.c.length){const cw=n.c.reduce((a,z)=>a+z.w,0),my=y+150,xs=[];let sx=x+(n.w-cw)/2;c.strokeStyle="#b9a88c";c.lineWidth=2;c.beginPath();c.moveTo(cx,y+120);c.lineTo(cx,my);c.stroke();
+n.c.forEach(k=>{xs.push(sx+k.w/2);tr(c,k,sx,y+200,g+1);sx+=k.w});c.beginPath();c.moveTo(xs[0],my);c.lineTo(xs[xs.length-1],my);xs.forEach(v=>{c.moveTo(v,my);c.lineTo(v,y+200)});c.stroke()}}
+const ld=s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s});
+function cover(c,im,x,y,s){const k=Math.max(s/im.width,s/im.height),w=im.width*k,h=im.height*k;c.save();c.beginPath();c.roundRect(x,y,s,s,12);c.clip();c.drawImage(im,x+(s-w)/2,y+(s-h)/2,w,h);c.restore()}
+function wrap(c,t,mw){const L=[];let s="";for(const ch of t){if(ch==="\n"||c.measureText(s+ch).width>mw){L.push(s);s=ch==="\n"?"":ch}else s+=ch}if(s)L.push(s);return L}
+$("#ex").onclick=async()=>{const bt=$("#ex");bt.textContent="製作中…";try{
+const dw=await getDw();
+const R=P.filter(p=>!p.par).map(lay);if(!R.length)return alert("目前沒有資料");
+const tw=R.reduce((a,x)=>a+x.w,0),dep=n=>1+Math.max(0,...n.c.map(dep)),W=Math.max(tw+160,1200),H=Math.max(...R.map(dep))*200+200;
+let cv=document.createElement("canvas");cv.width=W;cv.height=H;let c=cv.getContext("2d");
+c.fillStyle="#f6f1e7";c.fillRect(0,0,W,H);c.textAlign="center";c.fillStyle="#a67c2e";c.font="700 40px "+FN;c.fillText("石氏家譜",W/2,70);
+let x=(W-tw)/2;R.forEach(r=>{tr(c,r,x,120,16);x+=r.w});
+const pdf=new jspdf.jsPDF({orientation:W>=H?"l":"p",unit:"px",format:[W,H],hotfixes:["px_scaling"]});
+pdf.addImage(cv.toDataURL("image/jpeg",.92),"JPEG",0,0,W,H);
+const F=[];const wk=n=>{F.push(n.p);n.c.forEach(wk)};R.forEach(wk);
+const IM=await Promise.all(F.map(async p=>[p.ph?await ld(p.ph):null,p.sp&&p.sp.ph?await ld(p.sp.ph):null]));
+const PP=7,pages=Math.ceil(F.length/PP);cv.width=1240;cv.height=1754;c=cv.getContext("2d");
+for(let g=0;g<pages;g++){c.fillStyle="#f6f1e7";c.fillRect(0,0,1240,1754);c.textAlign="left";c.fillStyle="#a67c2e";c.font="700 32px "+FN;c.fillText("石氏家譜 · 成員詳錄",70,90);
+c.textAlign="center";c.font="14px "+FN;c.fillStyle="#7d6f5f";c.fillText(`${g+1} / ${pages}`,620,1710);
+F.slice(g*PP,g*PP+PP).forEach((p,i)=>{const y=140+i*218,k=g*PP+i,par=P.find(z=>z.id===p.par);c.strokeStyle="#b9a88c";c.lineWidth=1;c.beginPath();c.moveTo(70,y);c.lineTo(1170,y);c.stroke();
+if(IM[k][0])cover(c,IM[k][0],70,y+22,160);else{c.fillStyle="#a67c2e22";c.beginPath();c.roundRect(70,y+22,160,160,12);c.fill();c.fillStyle="#a67c2e";c.textAlign="center";c.font="700 60px "+FN;c.fillText(p.n[0]||"",150,y+120)}
+c.textAlign="left";c.fillStyle="#2b2118";c.font="700 30px "+FN;c.fillText(p.n,260,y+50);
+c.fillStyle="#a67c2e";c.font="15px "+FN;c.fillText(`第${cn(gen(p))}世 · ${p.s}${par?" · 父／母系："+par.n:""}`,260,y+76);
+c.fillStyle="#7d6f5f";c.fillText(`生：${p.b||"未詳"}　歿：${p.d||"—"}`,260,y+102);
+if(p.sp&&p.sp.n)c.fillText(`${p.sp.t}：${p.sp.n}　${p.sp.b?"生："+p.sp.b:""}${p.sp.d?"　歿："+p.sp.d:""}`,260,y+126);
+c.fillStyle="#2b2118";c.font="16px "+FN;wrap(c,p.bio||"",IM[k][1]?780:900).slice(0,3).forEach((t,j)=>c.fillText(t,260,y+152+j*22));
+if(IM[k][1]){cover(c,IM[k][1],1080,y+22,90);c.textAlign="center";c.fillStyle="#7d6f5f";c.font="13px "+FN;c.fillText(p.sp.n,1125,y+130)}});
+pdf.addPage([1240,1754],"p");pdf.addImage(cv.toDataURL("image/jpeg",.9),"JPEG",0,0,1240,1754)}
+await dw.save({filename:"石氏家譜.pdf",data:pdf.output("blob")})}catch(e){if(!e||e.code!=="declined")console.error(e)}finally{bt.textContent="匯出 PDF"}};
+let dn=0,sx,sy,sl,st;const w=$("#wrap");
 w.onmousedown=e=>{if(e.target.closest(".c"))return;dn=1;sx=e.clientX;sy=e.clientY;sl=w.scrollLeft;st=w.scrollTop};
-addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});
-addEventListener("mouseup",()=>dn=0);
-
-$("#ex").onclick=()=>{if(P.length<2){alert("請先在石氏家譜.html載入族譜數據");return}alert("PDF 匯出功能正在開發中")};
+addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});addEventListener("mouseup",()=>dn=0);
+let DB=null,ADM=false,BASE={v:0},PR=[];
+const toast=t=>{const d=$("#ts");d.textContent=t;d.hidden=false;setTimeout(()=>d.hidden=true,4000)};
+$("#bk").onclick=async()=>{const dw=await getDw();try{await dw.save({filename:"石氏家譜備份.json",data:JSON.stringify({v:BASE.v,P})})}catch(e){}};
+BASE={v:1780000000};ADM=location.hash==="#admin";
+{let S;try{S=JSON.parse(localStorage.getItem("shi3")||"")}catch(x){}
+P=(ADM&&S&&S.v===BASE.v&&Array.isArray(S.P))?S.P:JSON.parse(JSON.stringify(DEF));
+$("#add").hidden=!ADM;$("#bk").hidden=!ADM;$("#up").hidden=!ADM;$("#rl").textContent=ADM?"管理模式":"十六世至二十二世";render();w.scrollLeft=(w.scrollWidth-w.clientWidth)/2}
+$("#up").onclick=async()=>{try{const r=await fetch(location.href.split("#")[0],{cache:"no-store"});if(!r.ok)throw 0;let t=await r.text();
+const a=t.indexOf("const DEF="),b=t.indexOf(";\nlet P=",a);if(a<0||b<0)throw 0;
+t=t.slice(0,a)+"const DEF="+JSON.stringify(P).replace(/</g,"\\u003c")+t.slice(b);
+t=t.replace(/BASE=\{v:\d{5,}\}/,"BASE={v:"+Date.now()+"}");
+const dw=await getDw();await dw.save({filename:"index.html",data:new Blob([t],{type:"text/html"})})}catch(e){alert("請在已上架的網站網址上開啟後使用（直接開本機檔案無法產生更新檔）")}};
+addEventListener("hashchange",()=>location.reload());
 </script></body></html>
