@@ -46,54 +46,28 @@ label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
 aside input,aside textarea,aside select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
 textarea{min-height:100px;resize:vertical}
 .ch{cursor:pointer;color:var(--gold);margin-right:10px;font-size:14px}
-dialog{background:var(--card);color:var(--ink);border:1px solid var(--gold);border-radius:14px;width:min(560px,92vw)}
-dialog textarea{width:100%;min-height:200px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
 .av{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin:2px auto 6px;border:2px solid var(--gold)}
 .pic{width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid var(--gold);margin-bottom:14px;display:block}
 .pv{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--gold);display:block;margin:8px 0}
 .pv[hidden]{display:none}
 aside input[type=file]{padding:5px;font-size:12px}
-#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
-#lock h1{flex:none;font-size:30px}#lock input{background:var(--card);border:1px solid var(--gold);border-radius:999px;padding:10px 20px;width:260px;text-align:center;font-size:16px;letter-spacing:.2em}
-#lm{color:#b04a4a;font-size:13px;min-height:18px}
-#ls{display:none;flex:1;overflow:auto;padding:14px 12px 65vh}
-body.L #ls{display:block}body.L #wrap{display:none}body.L #zi,body.L #zo{display:none}
-.ll,.ll ul{list-style:none;margin:0;padding-left:0}.ll ul{padding-left:18px;border-left:1px dashed var(--line);margin-left:14px}
-.lr{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer}.lr.sel{background:#a67c2e33}.lr.hit{background:#e2b93b33}
-.tg{width:24px;text-align:center;color:var(--gold);flex:none;font-size:16px;padding:6px 0}
-.av2{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700}
-.ln b{font-size:16px;letter-spacing:.1em}.ln em{font-style:normal;color:var(--f);font-size:12px}.ln small{display:block;color:var(--mut);font-size:11px}
+.link-btn{color:#0066cc;cursor:pointer;text-decoration:underline}
+.link-btn:hover{text-decoration:none}
 @media(max-width:760px){header{padding:10px 12px;gap:6px}h1{font-size:18px}h1 small{display:none}#q{width:110px}.b{padding:5px 10px}}
 @media(max-width:760px){aside{position:absolute;inset:auto 0 0 0;width:100%;max-height:62%;border:0;border-top:1px solid var(--gold);box-shadow:0 -10px 30px #0004}#wrap{padding:20px 12px 60px}}
 </style></head><body>
-<header><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY · <span id="rl"></span></small></h1>
+<header><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY · <span id="rl">公開版 · 即時更新</span></small></h1>
 <input id="q" placeholder="搜尋姓名…"><button class="b" id="zi">＋</button><button class="b" id="zo">－</button>
-<button class="b" id="add" hidden>新增始祖</button><button class="b" id="ex">匯出 PDF</button><button class="b" id="bk" hidden>匯出備份</button><button class="b" id="th">明／暗</button></header>
-<main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside><div id="ts" hidden style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;z-index:100"></div></main>
-<div id="lock"><form id="lf" style="display:contents"><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY</small></h1><div class="tag">請輸入密碼金鑰以開啟</div><input id="pw" type="password" placeholder="密碼" autofocus><div id="lm"></div><button type="submit" class="b on">確認</button><ul id="ls" class="ll"></ul></form></div>
+<button class="b" id="ex">匯出 PDF</button><button class="b" id="th">明／暗</button></header>
+<main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside></main>
 <script>
-// ====== SIMPLE PASSWORD SYSTEM ======
-const PASSWORDS = {
-  admin: 'Alantheadmin69',
-  family: 'Familyshih888'
-};
-
 const $=s=>document.querySelector(s);
 const m=(id,par,n,s,b,d,sp,bio)=>({id,par,n,s,b,d,bio:bio||"",sp:sp||null});
 
-// Demo data - replace with your actual data
-const DEMO_DATA = [
-  m(1, 0, '石姓始祖', '男', '?', '?', null, '家族始祖'),
-  m(2, 1, '石某某', '男', '1950', '2020', {n:'配偶名', t:'妻', b:'1952', d:'2018', ph:''}, ''),
-  m(3, 1, '石某某', '女', '1955', '2022', null, ''),
-  m(4, 2, '石某某', '男', '1975', '', null, ''),
-  m(5, 2, '石某某', '女', '1978', '', null, '')
-];
+// Load genealogy data from localStorage (persisted from 石氏家譜.html)
+let P=[],tmp={},sel=null,zoom=1,edit=false;
+const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:1,P}))}catch(e){alert("儲存空間不足")}render()};
 
-let P = DEMO_DATA, tmp={}, sel=null, zoom=1, edit=false;
-let ADM = false, BASE = {v: 0};
-
-const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:BASE.v,P}))}catch(e){alert("儲存空間不足，請先匯出備份或減少照片")}render()};
 const kids=id=>P.filter(p=>p.par===id);
 const gen=p=>{let g=16;while(p.par){p=P.find(x=>x.id===p.par);if(!p)break;g++}return g};
 const CN="零一二三四五六七八九十";
@@ -108,42 +82,19 @@ if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
 function render(){$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;panel()}
 
 function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
-if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option value="男" ${p.s!=="女"?"selected":""}>男</option><option value="女" ${p.s==="女"?"selected":""}>女</option></select></label><label>生年<input id="f_b" value="${esc(p.b)}"></label><label>卒年<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label><div class="row"><button type="button" class="b" id="rm1">刪除照片</button></div>
-<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><label>稱謂<input id="s_t" value="${esc(s?.t||"")}"></label><label>姓名<input id="s_n" value="${esc(s?.n||"")}"></label><label>生年<input id="s_b" value="${esc(s?.b||"")}"></label><label>卒年<input id="s_d" value="${esc(s?.d||"")}"></label><div class="row"><button type="button" class="b" id="rm2">刪除配偶照片</button></div></div>
-<div class="row"><button class="b on" id="sv">${ADM?"儲存":"送出審核"}</button><button class="b" id="cx">取消</button></div>`;return}
 const s=p.sp,ks=kids(p.id),par=P.find(x=>x.id===p.par);
 a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||"—"}</p></div>
-<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||"尚無記載，請按「編輯」補充。"}</p></div>
+<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||"暫無記載"}</p></div>
 ${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p></div>`:""}
 ${par?`<div class="sec"><h3>父親</h3><span class="ch" data-go="${par.id}">${esc(par.n)}</span></div>`:""}
 ${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-go="${k.id}">${esc(k.n)}</span>`).join("")}</div>`:""}
-<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`;
-$("#ed").onclick=()=>{edit=true;panel()};$("#ac").onclick=()=>{P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()};$("#cl").onclick=()=>{sel=null;render()};$("#dl2").onclick=()=>{const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
-if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;if(!ADM){alert("功能待實作")}else{P=P.filter(x=>!all.includes(x.id));save()}}}}
+<div class="row"><span class="link-btn" id="editgh">📝 在 GitHub 編輯</span><button class="b" id="cl">關閉</button></div>`;
+$("#cl").onclick=()=>{sel=null;render()};
+$("#editgh").onclick=()=>{window.open('https://github.com/pinq5666-oss/Shih-Family-/edit/main/%E7%9F%B3%E6%B0%8F%E5%AE%B6%E8%AD%9C.html','_blank')}}
 
-const nid=()=>Math.max(0,...P.map(p=>p.id))+1;
 document.addEventListener("click",e=>{const t=e.target,c=t.closest(".c");
-if(c){sel=+c.dataset.id;edit=false;render();return}
-if(t.dataset.go){sel=+t.dataset.go;render();return}
-const id=t.id;const p=P.find(x=>x.id===sel);
-if(id==="ed"){edit=true;panel()}
-if(id==="rm1"||id==="rm2"){tmp[id==="rm1"?"ph":"sph"]="";$(id==="rm1"?"#pv":"#pv2").hidden=true}
-if(id==="cl"||id==="cx"){tmp={};if(p&&p.id<0)P=P.filter(x=>x.id>0);edit=false;if(id==="cl")sel=null;render()}
-if(id==="ac"){P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
-if(id==="add"){P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
-if(id==="dl2"){const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
-if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;
-if(!ADM){alert("功能待實作")}else{P=P.filter(x=>!all.includes(x.id));save()}}}
-if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
-const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
-const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
-if(ADM){if(isNew)q.id=nid();sel=q.id;P.push(q);save()}
-else{sel=null;alert("功能待實作");render()}}
-});
-
-document.addEventListener("change",e=>{const t=e.target;if(t.id!=="f_ph"&&t.id!=="s_ph")return;const f=t.files[0];if(!f)return;
-const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
-const u=c.toDataURL("image/jpeg",.8),a=t.id==="f_ph";tmp[a?"ph":"sph"]=u;const v=$(a?"#pv":"#pv2");v.src=u;v.hidden=false};im.src=fr.result};fr.readAsDataURL(f)});
+if(c){sel=+c.dataset.id;render();return}
+if(t.dataset.go){sel=+t.dataset.go;render();return}});
 
 $("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};
 $("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
@@ -151,46 +102,20 @@ $("#th").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).get
 $("#q").oninput=e=>{const v=e.target.value.trim();document.querySelectorAll(".c").forEach(c=>c.classList.remove("hit"));if(!v)return;
 const h=[...document.querySelectorAll(".c")].filter(c=>c.dataset.n.includes(v));h.forEach(c=>c.classList.add("hit"));if(h[0])h[0].scrollIntoView({block:"center",inline:"center",behavior:"smooth"})};
 
-$("#ex").onclick=()=>{alert("PDF 匯出功能正在開發中")};
-$("#bk").onclick=()=>{alert("備份功能正在開發中")};
+// Load data from localStorage or show instruction
+const loadData=()=>{try{const S=JSON.parse(localStorage.getItem("shi3")||"");if(S&&Array.isArray(S.P)&&S.P.length>0){P=S.P;render();return}}catch(x){}
+$("#wrap").innerHTML="<div style='padding:40px;text-align:center'><h2 style='color:var(--gold)'>📖 家譜載入中...</h2><p style='color:var(--mut);margin-top:20px'>請先打開 <strong>石氏家譜.html</strong> 一次以載入族譜數據</p><a href='石氏家譜.html' class='b' style='display:inline-block;margin-top:20px'>點此打開完整版</a></div>"};
 
-let dn=0,sx,sy,sl,st;const w=$("#wrap");
+loadData();
+
+// Check for updates every 5 seconds
+setInterval(()=>{try{const S=JSON.parse(localStorage.getItem("shi3")||"");if(S&&Array.isArray(S.P)&&S.P.length>P.length){P=S.P;render()}}catch(x){}},5000);
+
+const w=$("#wrap");
+let dn=0,sx,sy,sl,st;
 w.onmousedown=e=>{if(e.target.closest(".c"))return;dn=1;sx=e.clientX;sy=e.clientY;sl=w.scrollLeft;st=w.scrollTop};
 addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});
 addEventListener("mouseup",()=>dn=0);
 
-// ====== SIMPLE LOGIN SYSTEM ======
-$("#lf").onsubmit=async e=>{
-  e.preventDefault();
-  const pw = $("#pw").value.trim();
-  
-  $("#lm").textContent = "檢驗中…";
-  
-  let isAdmin = false;
-  let isValid = false;
-  
-  if (pw === PASSWORDS.admin) {
-    isAdmin = true;
-    isValid = true;
-  } else if (pw === PASSWORDS.family) {
-    isAdmin = false;
-    isValid = true;
-  }
-  
-  if (!isValid) {
-    $("#lm").textContent = "❌ 密碼錯誤，請再試一次";
-    $("#pw").select();
-    return;
-  }
-  
-  // Success
-  ADM = isAdmin;
-  $("#lock").remove();
-  $("#add").hidden = !ADM;
-  $("#bk").hidden = !ADM;
-  $("#ex").hidden = false;
-  $("#rl").textContent = ADM ? "👑 管理員模式" : "👁️ 檢視模式";
-  render();
-  w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2;
-};
+$("#ex").onclick=()=>{if(P.length<2){alert("請先在石氏家譜.html載入族譜數據");return}alert("PDF 匯出功能正在開發中")};
 </script></body></html>
