@@ -72,20 +72,41 @@ body.L #ls{display:block}body.L #wrap{display:none}body.L #zi,body.L #zo{display
 <main><div id="wrap"><div id="tree" class="t"></div></div><aside id="pn"></aside><div id="ts" hidden style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;z-index:100"></div></main>
 <div id="lock"><form id="lf" style="display:contents"><h1>石氏家譜<small>THE SHI FAMILY GENEALOGY</small></h1><div class="tag">請輸入密碼金鑰以開啟</div><input id="pw" type="password" placeholder="密碼" autofocus><div id="lm"></div><button type="submit" class="b on">確認</button><ul id="ls" class="ll"></ul></form></div>
 <script>
+// ====== SIMPLE PASSWORD SYSTEM ======
+const PASSWORDS = {
+  admin: 'Alantheadmin69',
+  family: 'Familyshih888'
+};
+
 const $=s=>document.querySelector(s);
 const m=(id,par,n,s,b,d,sp,bio)=>({id,par,n,s,b,d,bio:bio||"",sp:sp||null});
-const ENC={d:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w==",a:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w==",f:"T1hFEwFpH7eDsXnhIr4a6M8zLbjJqjbV7QZkxggxCBBmMEGS0ul0MFrQGiFpJaDTW7luWmPfgPNEaTgzPxNzd4pyfG/QrxbLjgyVUYcC5cllcb8joWtxGziugtrasuiGvq74KVhZIY+5MAot/3LK1F7xdcqqK1NkYE7KAuEfx8BaVGzCoIbVKPYo41pRAWaS1HH8HV34+4GaacSH5jLAi2p+DnKLFJvLK1w9vjc8/dWBjJ+TjLoJcNSIB0yC1oM13ZELdh4TlBZ5/LL3eJnWwYLhfHjPJ0YMPKZrSrM9Dw+oxlCvNF3wXPvkH6jOPAHhW4VqDOqJsB3NPkrX4/V02qiD/4d3Cjn0Ul8m7E2yw60g6uUfmKPfvfT/1d8w=="};
-let P=[],tmp={},sel=null,zoom=1,edit=false;
+
+// Demo data - replace with your actual data
+const DEMO_DATA = [
+  m(1, 0, '石姓始祖', '男', '?', '?', null, '家族始祖'),
+  m(2, 1, '石某某', '男', '1950', '2020', {n:'配偶名', t:'妻', b:'1952', d:'2018', ph:''}, ''),
+  m(3, 1, '石某某', '女', '1955', '2022', null, ''),
+  m(4, 2, '石某某', '男', '1975', '', null, ''),
+  m(5, 2, '石某某', '女', '1978', '', null, '')
+];
+
+let P = DEMO_DATA, tmp={}, sel=null, zoom=1, edit=false;
+let ADM = false, BASE = {v: 0};
+
 const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:BASE.v,P}))}catch(e){alert("儲存空間不足，請先匯出備份或減少照片")}render()};
 const kids=id=>P.filter(p=>p.par===id);
 const gen=p=>{let g=16;while(p.par){p=P.find(x=>x.id===p.par);if(!p)break;g++}return g};
-const CN="零一二三四五六七八九十";const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
+const CN="零一二三四五六七八九十";
+const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
 const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const life=(b,d)=>(b||d)?`${esc(b||"？")}<br>${d?"–"+esc(d):"–"}`:"生卒未詳";
 const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(gen({par:x.pid,id:0}))+`世`}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
+
 function node(p){const c=kids(p.id);let h=`<li><div class="cp">${card({...p,pid:p.id},gen(p))}${p.sp?card({...p.sp,s:"女",pid:p.id},0,1).replace('data-id','data-sp="1" data-id'):""}</div>`;
 if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
+
 function render(){$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;panel()}
+
 function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
 if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option value="男" ${p.s!=="女"?"selected":""}>男</option><option value="女" ${p.s==="女"?"selected":""}>女</option></select></label><label>生年<input id="f_b" value="${esc(p.b)}"></label><label>卒年<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label><div class="row"><button type="button" class="b" id="rm1">刪除照片</button></div>
 <div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><label>稱謂<input id="s_t" value="${esc(s?.t||"")}"></label><label>姓名<input id="s_n" value="${esc(s?.n||"")}"></label><label>生年<input id="s_b" value="${esc(s?.b||"")}"></label><label>卒年<input id="s_d" value="${esc(s?.d||"")}"></label><div class="row"><button type="button" class="b" id="rm2">刪除配偶照片</button></div></div>
@@ -99,8 +120,9 @@ ${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-
 <div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`;
 $("#ed").onclick=()=>{edit=true;panel()};$("#ac").onclick=()=>{P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()};$("#cl").onclick=()=>{sel=null;render()};$("#dl2").onclick=()=>{const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
 if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;if(!ADM){alert("功能待實作")}else{P=P.filter(x=>!all.includes(x.id));save()}}}}
+
 const nid=()=>Math.max(0,...P.map(p=>p.id))+1;
-document.addEventListener("click",async e=>{const t=e.target,c=t.closest(".c");
+document.addEventListener("click",e=>{const t=e.target,c=t.closest(".c");
 if(c){sel=+c.dataset.id;edit=false;render();return}
 if(t.dataset.go){sel=+t.dataset.go;render();return}
 const id=t.id;const p=P.find(x=>x.id===sel);
@@ -111,51 +133,64 @@ if(id==="ac"){P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
 if(id==="add"){P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
 if(id==="dl2"){const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
 if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;
-if(!ADM){alert("功能待實作")}
-else{P=P.filter(x=>!all.includes(x.id));save()}}}
+if(!ADM){alert("功能待實作")}else{P=P.filter(x=>!all.includes(x.id));save()}}}
 if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
 const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
 const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
 if(ADM){if(isNew)q.id=nid();sel=q.id;P.push(q);save()}
 else{sel=null;alert("功能待實作");render()}}
 });
+
 document.addEventListener("change",e=>{const t=e.target;if(t.id!=="f_ph"&&t.id!=="s_ph")return;const f=t.files[0];if(!f)return;
 const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
 const u=c.toDataURL("image/jpeg",.8),a=t.id==="f_ph";tmp[a?"ph":"sph"]=u;const v=$(a?"#pv":"#pv2");v.src=u;v.hidden=false};im.src=fr.result};fr.readAsDataURL(f)});
-$("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};$("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
+
+$("#zi").onclick=()=>{zoom=Math.min(1.6,zoom+.1);render()};
+$("#zo").onclick=()=>{zoom=Math.max(.4,zoom-.1);render()};
 $("#th").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()==="#14110d";r.dataset.theme=d?"light":"dark"};
 $("#q").oninput=e=>{const v=e.target.value.trim();document.querySelectorAll(".c").forEach(c=>c.classList.remove("hit"));if(!v)return;
 const h=[...document.querySelectorAll(".c")].filter(c=>c.dataset.n.includes(v));h.forEach(c=>c.classList.add("hit"));if(h[0])h[0].scrollIntoView({block:"center",inline:"center",behavior:"smooth"})};
-const FN='"Noto Serif TC","Songti TC","PingFang TC","Microsoft JhengHei",serif';
-const lay=p=>{const c=kids(p.id).map(lay),o=p.sp&&p.sp.n?2:1,w=o*170;return{p,c,ow:w,w:Math.max(w+30,c.reduce((a,x)=>a+x.w,0))}};
-function crd(c,x,y,p,g,sp){c.fillStyle="#fffdf8";c.strokeStyle="#b9a88c";c.lineWidth=1.5;c.beginPath();c.roundRect(x,y,160,120,10);c.fill();c.stroke();c.fillStyle=(p.s==="女"||sp)?"#b5566b":"#3f6d8f";c.fillRect(x,y,160,3);
-c.textAlign="center";c.fillStyle="#a67c2e";c.font="12px "+FN;c.fillText(`第${cn(gen(p))}世`,x+80,y+20);
-c.fillStyle="#2b2118";c.font="700 20px "+FN;c.fillText(p.n,x+80,y+48);
-c.fillStyle="#7d6f5f";c.font="11px "+FN;c.fillText(`生：${p.b||"？"}`,x+80,y+65);c.fillText(`歿：${p.d||"—"}`,x+80,y+80);
-if(p.ph){const im=new Image();im.src=p.ph;c.save();c.beginPath();c.roundRect(x+8,y+8,30,30,4);c.clip();c.drawImage(im,x+8,y+8,30,30);c.restore()}}
-function tr(c,n,x,y,g){const cx=x+n.w/2,l=cx-(n.ow-10)/2;crd(c,l,y,n.p,g,0);if(n.ow>170)crd(c,l+170,y,n.p.sp,g,1);
-if(n.c.length){const cw=n.c.reduce((a,z)=>a+z.w,0),my=y+150,xs=[];let sx=x+(n.w-cw)/2;c.strokeStyle="#b9a88c";c.lineWidth=2;c.beginPath();c.moveTo(cx,y+120);c.lineTo(cx,my);c.stroke();
-n.c.forEach(k=>{xs.push(sx+k.w/2);tr(c,k,sx,y+200,g+1);sx+=k.w});c.beginPath();c.moveTo(xs[0],my);c.lineTo(xs[xs.length-1],my);xs.forEach(v=>{c.moveTo(v,my);c.lineTo(v,y+200)});c.stroke()}}
-const ld=s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s});
-function cover(c,im,x,y,s){const k=Math.max(s/im.width,s/im.height),w=im.width*k,h=im.height*k;c.save();c.beginPath();c.roundRect(x,y,s,s,12);c.clip();c.drawImage(im,x+(s-w)/2,y+(s-h)/2,w,h);c.restore()}
-function wrap(c,t,mw){const L=[];let s="";for(const ch of t){if(ch==="\n"||c.measureText(s+ch).width>mw){L.push(s);s=ch==="\n"?"":ch}else s+=ch}if(s)L.push(s);return L}
-$("#ex").onclick=async()=>{const bt=$("#ex");bt.textContent="製作中…";try{alert("PDF 匯出功能需要密碼保護機制。請在進階模式中使用。")}finally{bt.textContent="匯出 PDF"}};
-$("#bk").onclick=async()=>{try{alert("備份功能需要密碼保護機制。請在進階模式中使用。")}catch(e){console.error(e)}};
+
+$("#ex").onclick=()=>{alert("PDF 匯出功能正在開發中")};
+$("#bk").onclick=()=>{alert("備份功能正在開發中")};
+
 let dn=0,sx,sy,sl,st;const w=$("#wrap");
 w.onmousedown=e=>{if(e.target.closest(".c"))return;dn=1;sx=e.clientX;sy=e.clientY;sl=w.scrollLeft;st=w.scrollTop};
-addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});addEventListener("mouseup",()=>dn=0);
-let DB=null,ADM=false,BASE={v:0},PR=[];
-const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function tryK(pw,w){const b=b64(w),s=crypto.subtle;
-const k=await s.deriveKey({name:"PBKDF2",salt:b.slice(0,16),iterations:100000,hash:"SHA-256"},await s.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]),{name:"AES-GCM",length:256},false,["decrypt"]);
-return s.decrypt({name:"AES-GCM",iv:b.slice(16,28)},k,b.slice(28))}
-async function openPw(pw){const s=crypto.subtle;let K,role="a";
-try{K=await tryK(pw,ENC.a)}catch(e){K=await tryK(pw,ENC.f);role="f"}
-const d=b64(ENC.d),key=await s.importKey("raw",K,"AES-GCM",false,["decrypt"]);
-return{role,base:JSON.parse(new TextDecoder().decode(await s.decrypt({name:"AES-GCM",iv:d.slice(0,12)},key,d.slice(12))))}}
-$("#lf").onsubmit=async e=>{e.preventDefault();const pw=$("#pw").value.trim();
-if(!(window.crypto&&crypto.subtle))return $("#lm").textContent="此瀏覽器不支援解密，請改用 Safari 或 Chrome 直接開啟連結";
-$("#lm").textContent="驗證中…請稍候";
-try{const{role,base}=await openPw(pw);BASE=base;ADM=role==="a";P=base.P;$("#lock").remove();$("#add").hidden=!ADM;$("#bk").hidden=!ADM;$("#rl").textContent=ADM?"管理員":"檢視模式";render();w.scrollLeft=(w.scrollWidth-w.clientWidth)/2}
-catch(x){$("#lm").textContent="密碼錯誤，請再試一次";$("#pw").select()}};
+addEventListener("mousemove",e=>{if(dn){w.scrollLeft=sl-(e.clientX-sx);w.scrollTop=st-(e.clientY-sy)}});
+addEventListener("mouseup",()=>dn=0);
+
+// ====== SIMPLE LOGIN SYSTEM ======
+$("#lf").onsubmit=async e=>{
+  e.preventDefault();
+  const pw = $("#pw").value.trim();
+  
+  $("#lm").textContent = "檢驗中…";
+  
+  let isAdmin = false;
+  let isValid = false;
+  
+  if (pw === PASSWORDS.admin) {
+    isAdmin = true;
+    isValid = true;
+  } else if (pw === PASSWORDS.family) {
+    isAdmin = false;
+    isValid = true;
+  }
+  
+  if (!isValid) {
+    $("#lm").textContent = "❌ 密碼錯誤，請再試一次";
+    $("#pw").select();
+    return;
+  }
+  
+  // Success
+  ADM = isAdmin;
+  $("#lock").remove();
+  $("#add").hidden = !ADM;
+  $("#bk").hidden = !ADM;
+  $("#ex").hidden = false;
+  $("#rl").textContent = ADM ? "👑 管理員模式" : "👁️ 檢視模式";
+  render();
+  w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2;
+};
 </script></body></html>
