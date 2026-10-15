@@ -88,12 +88,12 @@ if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
 function render(){const sl0=w.scrollLeft,st0=w.scrollTop;$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;w.scrollLeft=sl0;w.scrollTop=st0;panel()}
 function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
 if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><button class="b" id="rm1" style="margin-top:6px">移除照片</button><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option ${p.s==="男"?"selected":""}>男</option><option ${p.s==="女"?"selected":""}>女</option></select></label><label>出生<input id="f_b" value="${esc(p.b)}" placeholder="例：民國63年2月13日"></label><label>逝世（在世請留空）<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label>
-<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><button class="b" id="rm2" style="margin-top:6px">移除照片</button><label>姓名<input id="s_n" value="${esc(s&&s.n)}"></label><label>關係<select id="s_t"><option ${s&&s.t==="前配偶"?"":"selected"}>配偶</option><option ${s&&s.t==="前配偶"?"selected":""}>前配偶</option></select></label><label>出生<input id="s_b" value="${esc(s&&s.b)}"></label><label>逝世<input id="s_d" value="${esc(s&&s.d)}"></label></div>
+<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><button class="b" id="rm2" style="margin-top:6px">移除照片</button><label>姓名<input id="s_n" value="${esc(s&&s.n)}"></label><label>關係<select id="s_t"><option ${s&&s.t==="前配偶"?"":"selected"}>配偶</option><option ${s&&s.t==="前配偶"?"selected":""}>前配偶</option></select></label><label>出生<input id="s_b" value="${esc(s&&s.b)}"></label><label>逝世<input id="s_d" value="${esc(s&&s.d)}"></label><label>配偶生平事蹟<textarea id="s_bio">${esc(s&&s.bio)}</textarea></label></div>
 <div class="row"><button class="b on" id="sv">${ADM?"儲存":"送出審核"}</button><button class="b" id="cx">取消</button></div>`;return}
 const s=p.sp,ks=kids(p.id),par=P.find(x=>x.id===p.par);
 a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||(p.b?"在世／未載":"未詳")}</p></div>
 <div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||(ADM?"尚無記載，請按「編輯」補充。":"尚無記載")}</p></div>
-${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p></div>`:""}
+${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p><p style="margin-top:8px">${esc(s.bio)||(ADM?"尚無生平記載，請按「編輯」補充。":"尚無生平記載")}</p></div>`:""}
 ${par?`<div class="sec"><h3>父親</h3><span class="ch" data-go="${par.id}">${esc(par.n)}</span></div>`:""}
 ${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-go="${k.id}">${esc(k.n)}</span>`).join("")}</div>`:""}
 <div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`}
@@ -115,7 +115,7 @@ if(!ADM){await prop({type:"delete",target:p.id,name:p.n,data:null});render()}
 else if(DB){P=P.filter(x=>!all.includes(x.id));render();await persist([],all)}
 else{P=P.filter(x=>!all.includes(x.id));save()}}}
 if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
-const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
+const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim(),bio:$("#s_bio").value}:null};
 const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
 if(ADM){if(isNew)q.id=nid();sel=q.id;if(DB){await persist([q])}else{{const i=P.findIndex(x=>x.id===q.id);if(i>=0)P[i]=q;else P.push(q)}save()}}
 else{sel=null;await prop({type:isNew?"add":"edit",target:isNew?0:q.id,name:n,data:q});render()}}
@@ -158,7 +158,7 @@ c.textAlign="left";c.fillStyle="#2b2118";c.font="700 30px "+FN;c.fillText(p.n,26
 c.fillStyle="#a67c2e";c.font="15px "+FN;c.fillText(`第${cn(gen(p))}世 · ${p.s}${par?" · 父／母系："+par.n:""}`,260,y+76);
 c.fillStyle="#7d6f5f";c.fillText(`生：${p.b||"未詳"}　歿：${p.d||"—"}`,260,y+102);
 if(p.sp&&p.sp.n)c.fillText(`${p.sp.t}：${p.sp.n}　${p.sp.b?"生："+p.sp.b:""}${p.sp.d?"　歿："+p.sp.d:""}`,260,y+126);
-c.fillStyle="#2b2118";c.font="16px "+FN;wrap(c,p.bio||"",IM[k][1]?780:900).slice(0,3).forEach((t,j)=>c.fillText(t,260,y+152+j*22));
+c.fillStyle="#2b2118";c.font="15px "+FN;wrap(c,(p.bio||"")+(p.sp&&p.sp.bio?"\n配偶："+p.sp.bio:""),IM[k][1]?780:900).slice(0,4).forEach((t,j)=>c.fillText(t,260,y+148+j*20));
 if(IM[k][1]){cover(c,IM[k][1],1080,y+22,90);c.textAlign="center";c.fillStyle="#7d6f5f";c.font="13px "+FN;c.fillText(p.sp.n,1125,y+130)}});
 pdf.addPage([1240,1754],"p");pdf.addImage(cv.toDataURL("image/jpeg",.9),"JPEG",0,0,1240,1754)}
 await dw.save({filename:"石氏家譜.pdf",data:pdf.output("blob")})}catch(e){if(!e||e.code!=="declined")console.error(e)}finally{bt.textContent="匯出 PDF"}};
