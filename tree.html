@@ -75,64 +75,50 @@ body.L #ls{display:block}body.L #wrap{display:none}body.L #zi,body.L #zo{display
 const $=s=>document.querySelector(s);
 const m=(id,par,n,s,b,d,sp,bio)=>({id,par,n,s,b,d,bio:bio||"",sp:sp||null});
 const DEF=[{"id":1,"par":0,"n":"石有慶","s":"男","b":"民前 同治3年10月14日","d":"民前 光緒17年10月12日","bio":"曾曾祖父。依石家族譜為第十六世。","sp":{"n":"石鄭招","b":"民前 同治6年3月11日","d":"民國35年5月10日","t":"配偶"}},{"id":2,"par":1,"n":"石清標","s":"男","b":"民前 光緒14年3月23日","d":"民國62年1月13日","bio":"曾祖父。第十七世。","sp":{"n":"石游儉","b":"民前 光緒23年12月21日","d":"民國70年2月23日","t":"配偶"}},{"id":3,"par":2,"n":"石振發","s":"男","b":"民前 光緒31年6月15日","d":"民國85年3月27日","bio":"祖父。第十八世。","sp":{"n":"石江月妹","b":"民國3年3月16日","d":"民國84年6月18日","t":"配偶"}},{"id":4,"par":3,"n":"石世強","s":"男","b":"民國20年11月6日","d":"民國107年2月12日","bio":"父親。第十九世。","sp":{"n":"石劉素珍","b":"民國23年10月22日","d":"民國113年6月16日","t":"配偶"}},{"id":5,"par":3,"n":"石鳳","s":"女","b":"民國28年7月23日","d":"","bio":"姑姑。第十九世。","sp":null},{"id":6,"par":4,"n":"石政金","s":"男","b":"民國40年9月20日","d":"民國48年9月24日","bio":"第二十世。","sp":null},{"id":7,"par":4,"n":"石政柱","s":"男","b":"民國43年11月28日","d":"","bio":"","sp":{"n":"石曾素貞","b":"民國42年6月15日","d":"","t":"配偶"}},{"id":8,"par":4,"n":"石政城","s":"男","b":"民國51年11月25日","d":"","bio":"","sp":{"n":"蕭淑惠","b":"","d":"","t":"配偶"}},{"id":9,"par":4,"n":"石政維","s":"男","b":"民國53年11月16日","d":"","bio":"","sp":{"n":"月淑惠","b":"","d":"","t":"前配偶"}},{"id":10,"par":4,"n":"石政義","s":"男","b":"民國57年7月25日","d":"","bio":"","sp":{"n":"李瑞芬","b":"民國59年6月11日","d":"","t":"配偶"}},{"id":11,"par":4,"n":"石秀美","s":"女","b":"民國47年3月18日","d":"","bio":"","sp":{"n":"葉金龍","b":"","d":"","t":"配偶"}},{"id":12,"par":7,"n":"石國鋒","s":"男","b":"民國63年2月13日","d":"","bio":"","sp":{"n":"王筱婷","b":"民國65年4月23日","d":"","t":"配偶"}},{"id":13,"par":7,"n":"石綿濡","s":"男","b":"民國64年10月6日","d":"","bio":"","sp":{"n":"莊淑惠","b":"民國66年2月18日","d":"","t":"配偶"}},{"id":14,"par":7,"n":"石丞修","s":"男","b":"民國72年2月5日","d":"民國105年1月26日","bio":"","sp":null},{"id":15,"par":8,"n":"石博舜","s":"男","b":"","d":"","bio":"","sp":{"n":"許方齡","b":"","d":"","t":"配偶"}},{"id":16,"par":8,"n":"石恩齊","s":"男","b":"","d":"","bio":"","sp":{"n":"（未填）","b":"","d":"","t":"配偶"}},{"id":17,"par":8,"n":"石宇倫","s":"男","b":"","d":"","bio":"","sp":{"n":"蘇筠婷","b":"","d":"","t":"配偶"}},{"id":18,"par":9,"n":"石竹峻","s":"男","b":"","d":"","bio":"","sp":{"n":"（未填）","b":"","d":"","t":"配偶"}},{"id":19,"par":9,"n":"石綿楷","s":"男","b":"","d":"","bio":"","sp":{"n":"龔慈恩","b":"","d":"","t":"配偶"}},{"id":20,"par":9,"n":"石雨涵","s":"女","b":"","d":"","bio":"","sp":null},{"id":21,"par":10,"n":"石智宇","s":"男","b":"民國91年8月3日","d":"","bio":"","sp":null},{"id":22,"par":10,"n":"石佳憲","s":"男","b":"民國98年5月12日","d":"","bio":"","sp":null},{"id":23,"par":11,"n":"葉子銨","s":"男","b":"","d":"","bio":"","sp":{"n":"許惠如","b":"","d":"","t":"前配偶"}},{"id":24,"par":11,"n":"葉芳容","s":"女","b":"","d":"","bio":"","sp":{"n":"呂啟豪","b":"","d":"","t":"配偶"}},{"id":25,"par":12,"n":"石崇佑","s":"男","b":"民國91年11月16日","d":"","bio":"","sp":null},{"id":26,"par":12,"n":"石倚慈","s":"女","b":"民國97年1月20日","d":"","bio":"","sp":null},{"id":27,"par":13,"n":"石軒齊","s":"男","b":"民國87年10月24日","d":"","bio":"","sp":null},{"id":28,"par":15,"n":"石芮瑜","s":"女","b":"","d":"","bio":"","sp":null},{"id":29,"par":15,"n":"石芸熙","s":"女","b":"","d":"","bio":"","sp":null},{"id":30,"par":17,"n":"石閔晞","s":"女","b":"","d":"","bio":"","sp":null},{"id":31,"par":19,"n":"石顥","s":"男","b":"","d":"","bio":"","sp":null}];
-let P=[],tmp={},selSp=false,sel=null,zoom=1,edit=false;
+let P=[],tmp={},sel=null,zoom=1,edit=false;
 const save=()=>{try{localStorage.setItem("shi3",JSON.stringify({v:BASE.v,P}))}catch(e){alert("儲存空間不足，請先匯出備份或減少照片")}render()};
 const kids=id=>P.filter(p=>p.par===id);
 const gen=p=>{let g=16;while(p.par){p=P.find(x=>x.id===p.par);if(!p)break;g++}return g};
 const CN="零一二三四五六七八九十";const cn=n=>n<=10?CN[n]:n<20?"十"+CN[n-10]:"二十"+(n>20?CN[n-20]:"");
 const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const life=(b,d)=>(b||d)?`${esc(b||"？")}<br>${d?"–"+esc(d):"–"}`:"生卒未詳";
-const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid&&selSp===!!sp?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(g)+"世"}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
-function node(p){const c=kids(p.id);let h=`<li><div class="cp">${card({...p,pid:p.id},gen(p))}${p.sp?card({...p.sp,s:p.sp.s||(p.s==="男"?"女":"男"),pid:p.id},0,1).replace('data-id','data-sp="1" data-id'):""}</div>`;
+const card=(x,g,sp)=>`<div class="c ${x.s==="女"?"f":""} ${sel===x.pid?"sel":""}" data-id="${x.pid}" data-n="${esc(x.n)}">${x.ph?`<img class="av" src="${x.ph}">`:""}<small>${sp?x.t||"配偶":"第"+cn(g)+"世"}</small><b>${esc(x.n)}</b><i>${life(x.b,x.d)}</i></div>`;
+function node(p){const c=kids(p.id);let h=`<li><div class="cp">${card({...p,pid:p.id},gen(p))}${p.sp?card({...p.sp,s:"女",pid:p.id},0,1).replace('data-id','data-sp="1" data-id'):""}</div>`;
 if(c.length)h+="<ul>"+c.map(node).join("")+"</ul>";return h+"</li>"}
 function render(){const sl0=w.scrollLeft,st0=w.scrollTop;$("#tree").innerHTML="<ul>"+P.filter(p=>!p.par).map(node).join("")+"</ul>";$("#tree").style.transform=`scale(${zoom})`;w.scrollLeft=sl0;w.scrollTop=st0;panel()}
 function panel(){const a=$("#pn"),p=P.find(x=>x.id===sel);a.classList.toggle("o",!!p);if(!p)return;
-const lk=(id,sp,n)=>`<span class="ch" data-go="${id}" ${sp?'data-gsp="1"':""}>${esc(n)}</span>`;
-const emp=ADM?"尚無記載，請按「編輯」補充。":"尚無記載";
-if(edit){if(tmp.id!==p.id||tmp.sp!==selSp)tmp={id:p.id,sp:selSp,ph:selSp?((p.sp&&p.sp.ph)||""):(p.ph||"")};
-const o=selSp?{n:"",t:"配偶",...(p.sp||{}),s:(p.sp&&p.sp.s)||(p.s==="男"?"女":"男")}:p,par2=selSp||!p.par;
-a.innerHTML=`<h2>${p.id<0?"新增成員":selSp?"編輯配偶":"編輯"}</h2>${selSp?`<div class="tag">${esc(p.n)} 之配偶</div>`:""}<label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><button class="b" id="rm1" style="margin-top:6px">移除照片</button><label>姓名<input id="f_n" value="${esc(o.n)}"></label><label>性別<select id="f_s"><option ${o.s==="男"?"selected":""}>男</option><option ${o.s==="女"?"selected":""}>女</option></select></label>${selSp?`<label>關係<select id="s_t"><option ${o.t==="前配偶"?"":"selected"}>配偶</option><option ${o.t==="前配偶"?"selected":""}>前配偶</option></select></label>`:""}<label>出生<input id="f_b" value="${esc(o.b)}" placeholder="例：民國63年2月13日"></label><label>逝世（在世請留空）<input id="f_d" value="${esc(o.d)}"></label>${par2?`<label>父親（上一代，自行填寫）<input id="f_fa" value="${esc(o.fa)}"></label><label>母親（上一代，自行填寫）<input id="f_mo" value="${esc(o.mo)}"></label>`:""}<label>生平事蹟<textarea id="f_bio">${esc(o.bio)}</textarea></label>
-<div class="row"><button class="b on" id="sv">儲存</button><button class="b" id="cx">取消</button>${selSp&&p.sp?`<button class="b d" id="dsp">刪除配偶</button>`:""}</div>`;return}
-const ks=kids(p.id),kh=ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>lk(k.id,0,k.n)).join("")}</div>`:"";
-if(selSp&&p.sp){const s=p.sp,t=s.t||"配偶";
-a.innerHTML=`${s.ph?`<img class="pic" src="${s.ph}">`:""}<div class="tag">${esc(t)} · ${esc(s.s||(p.s==="男"?"女":"男"))}</div><h2>${esc(s.n)}</h2><div class="tag" style="margin-top:4px">${esc(p.n)} 之${esc(t)}</div><div class="sec"><h3>生卒</h3><p>生：${esc(s.b)||"未詳"}</p><p>歿：${esc(s.d)||(s.b?"在世／未載":"未詳")}</p></div>
-<div class="sec"><h3>生平事蹟</h3><p>${esc(s.bio)||emp}</p></div>
-<div class="sec"><h3>父母</h3><p>父親：${esc(s.fa)||"未詳"}</p><p>母親：${esc(s.mo)||"未詳"}</p></div>
-<div class="sec"><h3>${esc(t)}</h3>${lk(p.id,0,p.n)}</div>${kh}
-<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button>`:""}<button class="b" id="cl">關閉</button></div>`;return}
-const par=P.find(x=>x.id===p.par);let F="",M="",ph="";
-if(par){const ps=par.sp&&par.sp.n?par.sp:null,A=lk(par.id,0,par.n),B=ps?lk(par.id,1,ps.n):"";if(par.s==="女"){M=A;F=B}else{F=A;M=B}ph=1}
-else if(p.fa||p.mo){F=esc(p.fa);M=esc(p.mo);ph=1}
+if(edit){const s=p.sp;if(tmp.id!==p.id)tmp={id:p.id,ph:p.ph||"",sph:(p.sp&&p.sp.ph)||""};a.innerHTML=`<h2>${p.id<0?"新增成員":"編輯"}</h2><label>照片<img id="pv" class="pv" src="${tmp.ph}" ${tmp.ph?"":"hidden"}><input type="file" accept="image/*" id="f_ph"></label><button class="b" id="rm1" style="margin-top:6px">移除照片</button><label>姓名<input id="f_n" value="${esc(p.n)}"></label><label>性別<select id="f_s"><option ${p.s==="男"?"selected":""}>男</option><option ${p.s==="女"?"selected":""}>女</option></select></label><label>出生<input id="f_b" value="${esc(p.b)}" placeholder="例：民國63年2月13日"></label><label>逝世（在世請留空）<input id="f_d" value="${esc(p.d)}"></label><label>生平事蹟<textarea id="f_bio">${esc(p.bio)}</textarea></label>
+<div class="sec"><h3>配偶（留空姓名＝無配偶）</h3><label>配偶照片<img id="pv2" class="pv" src="${tmp.sph}" ${tmp.sph?"":"hidden"}><input type="file" accept="image/*" id="s_ph"></label><button class="b" id="rm2" style="margin-top:6px">移除照片</button><label>姓名<input id="s_n" value="${esc(s&&s.n)}"></label><label>關係<select id="s_t"><option ${s&&s.t==="前配偶"?"":"selected"}>配偶</option><option ${s&&s.t==="前配偶"?"selected":""}>前配偶</option></select></label><label>出生<input id="s_b" value="${esc(s&&s.b)}"></label><label>逝世<input id="s_d" value="${esc(s&&s.d)}"></label></div>
+<div class="row"><button class="b on" id="sv">${ADM?"儲存":"送出審核"}</button><button class="b" id="cx">取消</button></div>`;return}
+const s=p.sp,ks=kids(p.id),par=P.find(x=>x.id===p.par);
 a.innerHTML=`${p.ph?`<img class="pic" src="${p.ph}">`:""}<div class="tag">第${cn(gen(p))}世 · ${p.s}</div><h2>${esc(p.n)}</h2><div class="sec"><h3>生卒</h3><p>生：${esc(p.b)||"未詳"}</p><p>歿：${esc(p.d)||(p.b?"在世／未載":"未詳")}</p></div>
-<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||emp}</p></div>
-${ph?`<div class="sec"><h3>父母</h3><p>父親：${F||"未詳"}</p><p>母親：${M||"未詳"}</p></div>`:""}
-${p.sp&&p.sp.n?`<div class="sec"><h3>${esc(p.sp.t||"配偶")}</h3>${lk(p.id,1,p.sp.n)}</div>`:""}${kh}
-<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button>${p.sp&&p.sp.n?"":`<button class="b" id="asp">新增配偶</button>`}<button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`}
+<div class="sec"><h3>生平事蹟</h3><p>${esc(p.bio)||(ADM?"尚無記載，請按「編輯」補充。":"尚無記載")}</p></div>
+${s&&s.n?`<div class="sec"><h3>${esc(s.t)}</h3>${s.ph?`<img class="pic" src="${s.ph}">`:""}<p><b>${esc(s.n)}</b></p><p>生：${esc(s.b)||"未詳"}　歿：${esc(s.d)||"—"}</p></div>`:""}
+${par?`<div class="sec"><h3>父親</h3><span class="ch" data-go="${par.id}">${esc(par.n)}</span></div>`:""}
+${ks.length?`<div class="sec"><h3>子女</h3>${ks.map(k=>`<span class="ch" data-go="${k.id}">${esc(k.n)}</span>`).join("")}</div>`:""}
+<div class="row">${ADM?`<button class="b on" id="ed">編輯</button><button class="b" id="ac">新增子女</button><button class="b d" id="dl2">刪除</button>`:""}<button class="b" id="cl">關閉</button></div>`}
 const nid=()=>Math.max(0,...P.map(p=>p.id))+1;
 document.addEventListener("click",async e=>{const t=e.target,c=t.closest(".c");
 if(t.dataset.ok){await approve(PR.find(x=>x.pid===t.dataset.ok));return}
 if(t.dataset.no){await DB.doc("proposals/"+t.dataset.no).delete();return}
-if(c){sel=+c.dataset.id;selSp=c.dataset.sp==="1";edit=false;render();return}
-if(t.dataset.go){sel=+t.dataset.go;selSp=t.dataset.gsp==="1";edit=false;render();return}
+if(c){sel=+c.dataset.id;edit=false;render();return}
+if(t.dataset.go){sel=+t.dataset.go;render();return}
 const id=t.id;const p=P.find(x=>x.id===sel);
 if(id==="ed"){edit=true;panel()}
-if(id==="asp"){selSp=true;edit=true;tmp={};panel()}
-if(id==="dsp"){if(confirm("確定刪除配偶？")){p.sp=null;selSp=false;edit=false;tmp={};save()}}
 if(id==="rm1"||id==="rm2"){tmp[id==="rm1"?"ph":"sph"]="";$(id==="rm1"?"#pv":"#pv2").hidden=true}
-if(id==="cl"||id==="cx"){tmp={};if(!p||!p.sp||id==="cl")selSp=false;if(p&&p.id<0)P=P.filter(x=>x.id>0);edit=false;if(id==="cl")sel=null;render()}
-if(id==="ac"){selSp=false;P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
-if(id==="add"){selSp=false;P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="cl"||id==="cx"){tmp={};if(p&&p.id<0)P=P.filter(x=>x.id>0);edit=false;if(id==="cl")sel=null;render()}
+if(id==="ac"){P.push(m(-1,p.id,"","男","","",null));sel=-1;edit=true;render()}
+if(id==="add"){P.push(m(-1,0,"","男","","",null));sel=-1;edit=true;render()}
 if(id==="dl2"){const all=[p.id];for(let i=0;i<all.length;i++)kids(all[i]).forEach(k=>all.push(k.id));
 if(confirm(`確定${ADM?"刪除":"申請刪除"}「${p.n}」及其 ${all.length-1} 位後代？`)){sel=null;
 if(!ADM){await prop({type:"delete",target:p.id,name:p.n,data:null});render()}
 else if(DB){P=P.filter(x=>!all.includes(x.id));render();await persist([],all)}
 else{P=P.filter(x=>!all.includes(x.id));save()}}}
-if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");
-const v=i=>$(i)?$(i).value.trim():"",isNew=p.id<0;let q;
-if(selSp)q={...p,sp:{...(p.sp||{}),ph:tmp.ph||"",n,s:$("#f_s").value,t:$("#s_t").value,b:v("#f_b"),d:v("#f_d"),fa:v("#f_fa"),mo:v("#f_mo"),bio:$("#f_bio").value}};
-else{q={...p,n,s:$("#f_s").value,b:v("#f_b"),d:v("#f_d"),bio:$("#f_bio").value,ph:tmp.ph||""};if(!p.par){q.fa=v("#f_fa");q.mo=v("#f_mo")}}
-P=P.filter(x=>x.id>0);tmp={};edit=false;if(isNew)q.id=nid();sel=q.id;
-{const i=P.findIndex(x=>x.id===q.id);if(i>=0)P[i]=q;else P.push(q)}save()}
+if(id==="sv"){const n=$("#f_n").value.trim();if(!n)return alert("請輸入姓名");const sn=$("#s_n").value.trim();
+const q={id:p.id,par:p.par,n,s:$("#f_s").value,b:$("#f_b").value.trim(),d:$("#f_d").value.trim(),bio:$("#f_bio").value,ph:tmp.ph||"",sp:sn?{ph:tmp.sph||"",n:sn,t:$("#s_t").value,b:$("#s_b").value.trim(),d:$("#s_d").value.trim()}:null};
+const isNew=p.id<0;P=P.filter(x=>x.id>0);tmp={};edit=false;
+if(ADM){if(isNew)q.id=nid();sel=q.id;if(DB){await persist([q])}else{{const i=P.findIndex(x=>x.id===q.id);if(i>=0)P[i]=q;else P.push(q)}save()}}
+else{sel=null;await prop({type:isNew?"add":"edit",target:isNew?0:q.id,name:n,data:q});render()}}
 });
 document.addEventListener("change",e=>{const t=e.target;if(t.id!=="f_ph"&&t.id!=="s_ph")return;const f=t.files[0];if(!f)return;
 const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
@@ -163,16 +149,16 @@ pdf.addImage(cv.toDataURL("image/jpeg",.92),"JPEG",0,0,W,H);
 const F=[];const wk=n=>{F.push(n.p);n.c.forEach(wk)};R.forEach(wk);
             F.sort((x,y)=>gen(x)-gen(y));
 const IM=await Promise.all(F.map(async p=>[p.ph?await ld(p.ph):null,p.sp&&p.sp.ph?await ld(p.sp.ph):null]));
-const PP=7,PG=[];for(const gn of [...new Set(F.map(gen))]){const ix=F.map((q,i)=>i).filter(i=>gen(F[i])===gn);for(let s=0;s<ix.length;s+=PP)PG.push({gn,ix:ix.slice(s,s+PP),cont:s>0})}const pages=PG.length;cv.width=1240;cv.height=1754;c=cv.getContext("2d");
-for(let g=0;g<pages;g++){c.fillStyle="#f6f1e7";c.fillRect(0,0,1240,1754);c.textAlign="left";c.fillStyle="#a67c2e";c.font="700 32px "+FN;c.fillText(`石氏家譜 · 第${cn(PG[g].gn)}世${PG[g].cont?"（續）":""}`,70,90);
+const PP=7,pages=Math.ceil(F.length/PP);cv.width=1240;cv.height=1754;c=cv.getContext("2d");
+for(let g=0;g<pages;g++){c.fillStyle="#f6f1e7";c.fillRect(0,0,1240,1754);c.textAlign="left";c.fillStyle="#a67c2e";c.font="700 32px "+FN;c.fillText("石氏家譜 · 成員詳錄",70,90);
 c.textAlign="center";c.font="14px "+FN;c.fillStyle="#7d6f5f";c.fillText(`${g+1} / ${pages}`,620,1710);
-PG[g].ix.forEach((k,i)=>{const p=F[k],y=140+i*218,par=P.find(z=>z.id===p.par);c.strokeStyle="#b9a88c";c.lineWidth=1;c.beginPath();c.moveTo(70,y);c.lineTo(1170,y);c.stroke();
+F.slice(g*PP,g*PP+PP).forEach((p,i)=>{const y=140+i*218,k=g*PP+i,par=P.find(z=>z.id===p.par);c.strokeStyle="#b9a88c";c.lineWidth=1;c.beginPath();c.moveTo(70,y);c.lineTo(1170,y);c.stroke();
 if(IM[k][0])cover(c,IM[k][0],70,y+22,160);else{c.fillStyle="#a67c2e22";c.beginPath();c.roundRect(70,y+22,160,160,12);c.fill();c.fillStyle="#a67c2e";c.textAlign="center";c.font="700 60px "+FN;c.fillText(p.n[0]||"",150,y+120)}
 c.textAlign="left";c.fillStyle="#2b2118";c.font="700 30px "+FN;c.fillText(p.n,260,y+50);
 c.fillStyle="#a67c2e";c.font="15px "+FN;c.fillText(`第${cn(gen(p))}世 · ${p.s}${par?" · 父／母系："+par.n:""}`,260,y+76);
 c.fillStyle="#7d6f5f";c.fillText(`生：${p.b||"未詳"}　歿：${p.d||"—"}`,260,y+102);
 if(p.sp&&p.sp.n)c.fillText(`${p.sp.t}：${p.sp.n}　${p.sp.b?"生："+p.sp.b:""}${p.sp.d?"　歿："+p.sp.d:""}`,260,y+126);
-c.fillStyle="#2b2118";c.font="15px "+FN;wrap(c,(p.bio||"")+(p.sp&&p.sp.bio?"\n配偶："+p.sp.bio:""),IM[k][1]?780:900).slice(0,4).forEach((t,j)=>c.fillText(t,260,y+148+j*20));
+c.fillStyle="#2b2118";c.font="16px "+FN;wrap(c,p.bio||"",IM[k][1]?780:900).slice(0,3).forEach((t,j)=>c.fillText(t,260,y+152+j*22));
 if(IM[k][1]){cover(c,IM[k][1],1080,y+22,90);c.textAlign="center";c.fillStyle="#7d6f5f";c.font="13px "+FN;c.fillText(p.sp.n,1125,y+130)}});
 pdf.addPage([1240,1754],"p");pdf.addImage(cv.toDataURL("image/jpeg",.9),"JPEG",0,0,1240,1754)}
 await dw.save({filename:"石氏家譜.pdf",data:pdf.output("blob")})}catch(e){if(!e||e.code!=="declined")console.error(e)}finally{bt.textContent="匯出 PDF"}};
